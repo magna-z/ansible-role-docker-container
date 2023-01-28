@@ -1,0 +1,38 @@
+---
+- name: check mandatory variables
+  ansible.builtin.assert:
+    that:
+    - docker_container_name is defined
+    - docker_container_image is defined
+    - docker_container_build_path is defined
+    quiet: true
+
+- name: ensure requirements
+  include_tasks: requirements.yml
+
+- name: build docker image
+  community.docker.docker_image:
+    source: build
+    name: "{{ docker_container_image }}"
+    build:
+      path: "{{ docker_container_build_path }}"
+      dockerfile: "{{ docker_container_build_dockerfile_path }}"
+      args: "{{ docker_container_build_args }}"
+      network: "{{ docker_container_build_network }}"
+    force_source: true
+
+- name: run docker container
+  community.docker.docker_container:
+    recreate: true
+    force_kill: true
+    detach: true
+    entrypoint: "{{ docker_container_entrypoint | default(omit) }}"
+    command: "{{ docker_container_command | default(omit) }}"
+    env: "{{ docker_container_enviroments }}"
+    image: "{{ docker_container_image }}"
+    name: "{{ docker_container_name }}"
+    network_mode: "{{ docker_container_network }}"
+    published_ports: "{{ docker_container_ports }}"
+    labels: "{{ docker_container_labels }}"
+    privileged: false
+    restart_policy: unless-stopped

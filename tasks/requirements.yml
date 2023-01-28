@@ -1,0 +1,21 @@
+---
+- name: collect facts
+  ansible.builtin.setup:
+    gather_subset: [python_version]
+
+- name: ensure module "docker-py"
+  pip:
+    name: docker-py
+  when: ansible_facts.python.version.major is version('2', '=')
+
+- block:
+  - name: remove deprecated module "docker-py"
+    pip:
+      executable: pip3
+      name: docker-py
+      state: absent
+  - name: ensure pip3 modules
+    pip:
+      executable: pip3
+      name: [six, docker]
+  when: ansible_facts.python.version.major is version('3', '=')
