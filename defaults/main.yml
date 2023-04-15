@@ -1,10 +1,2 @@
 ---
-docker_container_build_dockerfile_path: ""
-docker_container_build_network: ""
-docker_container_build_args: {}
-
-docker_container_enviroments: {}
-
-docker_container_network: "default"
-docker_container_ports: []
-docker_container_labels: {}
+docker_container_temporary: false
